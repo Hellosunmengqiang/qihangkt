@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="cn.ybzy.qihangkt.dao.UserDao">
+  
+  	<select id="getUserByName" resultType="cn.ybzy.qihangkt.model.User">
+  		select * from t_user u where u.username=#{username} 
+  	</select>
+  	
+  	<select id="getUserByUid" resultMap="UserRelRoleMap">
+  		select 
+  			u.id,u.username,u.password,u.email,u.phone,u.enable
+  		from 
+  			t_user u
+  		where 
+  			u.id=#{uid}
+  	</select>
+  	
+  	<select id="selectUserByUserInfo"  resultMap="UserRelRoleRelResMap">
+  		select u.id,u.username,u.password,u.email,u.phone,u.enable,
+  				r.id rid,r.name,r.code,
+  				res.id resid,res.path
+  		from 
+  			t_user u,t_role r,t_resource res,t_user_role ur,t_role_resource rr
+  		where 
+  			u.id=ur.uid and ur.rid=r.id and r.id=rr.rid and rr.resid=res.id
+  		and
+  			(u.username=#{userInfo} or u.phone=#{userInfo} or u.email=#{userInfo}) 
+  	</select>
+
+  	<!-- 登录时的验证，涉及三张表，user/user_role/role -->
+  	<!--  <select id="selectUserByUserInfo"  resultMap="UserRelRoleRelResMap">
+  		select u.id,u.username,u.password,u.email,u.phone,u.enable,
+  				r.id rid,r.name,r.code,
+  				res.id resid,res.path
+  		from 
+  			t_user u,t_role r,t_resource res,t_user_role ur,t_role_resource rr
+  		where 
+  			u.id=ur.uid and ur.rid=r.id
+  		and
+  			(u.username=#{userInfo} or u.phone=#{userInfo} or u.email=#{userInfo}) 
+  	</select>-->
+  	
+  	
+  	<!-- 用户名或者手机号查询one -->
+  	<select id="selectUsersBySearchPage" resultMap="UserRelRoleMap">
+  		select u.id,u.username,u.password,u.email,u.phone,u.enable,r.name,r.code
+  		from 
+  			t_user u,t_role r,t_user_role ur
+  		where 
+  			u.id=ur.uid and ur.rid=r.id and (u.username like #{userInfo} or u.phone like #{userInfo})
+  	</select>
+  	<!-- 查询所有 -->
+  	<select id="selectRelevanceUsers" resultMap="UserRelRoleMap">
+  		select 
+  			u.id,u.username,u.password,u.email,u.phone,u.enable,r.name,r.code
+  		from 
+  			t_user u,t_role r,t_user_role ur
+  		where
+  			u.id=ur.uid and ur.rid=r.id
+  	</select>
+  	
+  	<select id="getRoleByUid" resultType="cn.ybzy.qihangkt.model.Role">
+  		select 
+  			r.id,r.name,r.code
+  		from 
+  			t_role r,t_user_role ur 
+  		where 
+  			ur.rid=r.id 
+  		and 
+  			ur.uid=#{id}
+  	</select>
+  	
+  	<resultMap type="cn.ybzy.qihangkt.model.User" id="UserRelRoleMap">
+  		<id column="id" property="id"/>
+  		<result column="username" property="username"/>
+  		<result column="email" property="email"/>
+  		<result column="phone" property="phone"/>
+  		<result column="enable" property="enable"/>
+  		<collection property="roles" ofType="cn.ybzy.qihangkt.model.Role">
+  			<id column="id" property="id"/>
+  			<result column="name" property="name"/>
+  			<result column="code" property="code"/>
+  			</collection>
+  	</resultMap>
+  	
+  	<resultMap type="cn.ybzy.qihangkt.model.User" id="UserRelRoleRelResMap">
+  		<id column="id" property="id"/>
+  		<result column="username" property="username"/>
+  		<result column="password" property="password"/>
+  		<result column="email" property="email"/>
+  		<result column="phone" property="phone"/>
+  		<result column="enable" property="enable"/>
+  		<collection property="roles" ofType="cn.ybzy.qihangkt.model.Role">
+  			<id column="rid" property="id"/>
+  			<result column="name" property="name"/>
+  			<result column="code" property="code"/>
+  			<collection property="resources" ofType="cn.ybzy.qihangkt.model.Resource">
+  				<id column="resid" property="id"/>
+  				<result column="path" property="path"/>
+  			</collection>
+  		</collection>
+  	</resultMap>
+  	
+  	
+  </mapper>

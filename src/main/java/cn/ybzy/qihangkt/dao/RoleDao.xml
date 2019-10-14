@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="cn.ybzy.qihangkt.dao.RoleDao">
+  
+  
+  <select id="getRoleByName" resultType="cn.ybzy.qihangkt.model.Role">
+  		select * from t_role r where r.name=#{name} 
+  	</select>
+  	
+  	<!-- 查询所有 -->
+  	<select id="selectRelevanceRoles" resultType="cn.ybzy.qihangkt.model.Role">
+  		select 
+  			*
+  		from 
+  			t_role
+  		
+  	</select>
+  	<!-- 字段查询 -->
+  	<select id="selectRolesBySearchPage" resultType="cn.ybzy.qihangkt.model.Role">
+  	  
+  	  select * from t_role where name like #{name}
+  	</select>
+  	
+  	<resultMap type="cn.ybzy.qihangkt.model.User" id="UserRelRoleMap">
+  		<id column="id" property="id"/>
+  		<result column="username" property="username"/>
+  		<result column="email" property="email"/>
+  		<result column="phone" property="phone"/>
+  		<result column="enable" property="enable"/>
+  		<collection property="roles" ofType="cn.ybzy.qihangkt.model.Role">
+  			<id column="id" property="id"/>
+  			<result column="name" property="name"/>
+  			<result column="code" property="code"/>
+  			</collection>
+  	</resultMap>
+  
+  </mapper>
